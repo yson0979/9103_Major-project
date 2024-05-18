@@ -95,19 +95,26 @@ function drawOilPainting(w, h) {
 function drawTree(x, y, size, angle) {
   if (size < 10) return; // Stop if the branch size is too small
 
-  let newX = x - size * cos(radians(angle));
-  let newY = y - size * sin(radians(angle));
+  // Add a random factor to branch angles for a more abstract look
+  let branchAngle = 0;
 
-  strokeWeight(map(size, 10, 80, 1, 8));
-  stroke(85, 53, 10);
+  let newX = x - size * cos(radians(angle + branchAngle));
+  let newY = y - size * sin(radians(angle + branchAngle));
+
+  // Use varying stroke weights and colors for a more abstract effect
+  strokeWeight(random(1, 20));
+  stroke(random(100, 255), 83, random(10, 100)); // Varied color for more artistic effect
+
   line(x, y, newX, newY);
 
-  drawTree(newX, newY, size * 0.7, angle - 55);
-  drawTree(newX, newY, size * 0.7, angle + 55);
+  // Recursive calls for branches with more variation
+  drawTree(newX, newY, size * random(0.5, 0.9), angle + random(25, 80));
+  drawTree(newX, newY, size * random(0.5, 0.9), angle - random(25, 80));
 
-  if (size < 20) {
-    fill(255, 0, 0);
+  // Add random colored "apples" or abstract blobs
+  if (size < 20 && random() > 0.6) { // Only add half the time for less predictability
+    fill(random(100, 255), 0, 0);
     noStroke();
-    ellipse(newX, newY, 10, 10);
+    ellipse(newX + random(-10, 20), newY + random(-10, 20), random(5, 25), random(5, 25));
   }
 }
