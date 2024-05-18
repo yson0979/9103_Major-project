@@ -30,13 +30,6 @@ function setup() {
 }
 
   function draw() {  
-  // Background settings
-  background(0);
-  fill(0, 76, 158);
-  stroke(0, 153, 153);
-  strokeWeight(50);
-  rect(0, 0, 463, 650);
-
   // Outer layer - light old green rectangle
   background(146, 157, 155); 
   noStroke();
@@ -44,14 +37,13 @@ function setup() {
   // Inner layer - dark blue with yellow grains and filamentous flocculent
   drawOilPainting(width, height); 
 
-  // Code of apple tree
-  drawTree(232, 632, 80, 0); // Center of the inner rectangle
+  // Draw the tree at the center bottom of the inner rectangle
+  drawTree(230, 514, 100, 90);  // Adjust x, y to ensure the tree is entirely visible
 }
 
 
 function drawOilPainting(w, h) {
   //TODO: Dark blue background
-
   fill(83, 96, 110);
   rect(18, 18, w - 36, h - 36); // Adjusted to leave a border
    
@@ -110,8 +102,8 @@ function drawTree(x, y, size, angle) {
   stroke(85, 53, 10);
   line(x, y, newX, newY);
 
-  drawTree(newX, newY, size * 0.7, angle - 75);
-  drawTree(newX, newY, size * 0.7, angle + 25);
+  drawTree(newX, newY, size * 0.7, angle - 55);
+  drawTree(newX, newY, size * 0.7, angle + 55);
 
   if (size < 20) {
     fill(255, 0, 0);
