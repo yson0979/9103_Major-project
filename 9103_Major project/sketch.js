@@ -26,35 +26,41 @@ function draw() {
 
 function setup() {
   createCanvas(464, 650);
-  
+  noLoop(); // Stops the draw function from continuously looping
+}
+
+  function draw() {  
+  // Background settings
+  background(0);
+  fill(0, 76, 158);
+  stroke(0, 153, 153);
+  strokeWeight(50);
+  rect(0, 0, 463, 650);
+
   // Outer layer - light old green rectangle
   background(146, 157, 155); 
   noStroke();
-
   
   // Inner layer - dark blue with yellow grains and filamentous flocculent
-  drawOilPainting(width, height);
+  drawOilPainting(width, height); 
 
-    
+  // Code of apple tree
+  drawTree(232, 632, 80, 0); // Center of the inner rectangle
 }
-
-
 
 
 function drawOilPainting(w, h) {
   //TODO: Dark blue background
 
-   fill(83, 96, 110);
+  fill(83, 96, 110);
   rect(18, 18, w - 36, h - 36); // Adjusted to leave a border
-  
-
    
   // Draw the stripe texture
    noFill(); 
    // 
   for (let i = 0; i < 2600; i++) { 
     let storkeWeight = random(0.36, 0.08)
-    i % 3 ===0 ? stroke(255, 255, 255): stroke(220, 230,219 );   
+    i % 3 ===0 ? stroke(255, 255, 255): stroke(220, 230, 219);   
 
     
     strokeWeight(storkeWeight); 
@@ -71,8 +77,7 @@ function drawOilPainting(w, h) {
     bezier(x1, y1, cp1x, cp1y, cp2x, cp2y, x2, y2); // Draw a curved line to simulate filamentous flocculent texture
 }
 
- // Draw the dot text ture 
-
+ // Draw the dot texture 
  let xDot = 20; 
  let yDot = 20; 
  fill(46, 58, 73);
@@ -83,7 +88,7 @@ function drawOilPainting(w, h) {
      ellipse(xDot + i*5.5, yDot + j*5.5, 2, 2)
    }
  }
- 
+}
  /*
  for (let i = 0; i < 1000; i++){
   fill(255, 255, 102); // Yellow grains color
@@ -94,7 +99,23 @@ function drawOilPainting(w, h) {
 }
 */ 
 
-  
- 
-  
+
+function drawTree(x, y, size, angle) {
+  if (size < 10) return; // Stop if the branch size is too small
+
+  let newX = x - size * cos(radians(angle));
+  let newY = y - size * sin(radians(angle));
+
+  strokeWeight(map(size, 10, 80, 1, 8));
+  stroke(85, 53, 10);
+  line(x, y, newX, newY);
+
+  drawTree(newX, newY, size * 0.7, angle - 75);
+  drawTree(newX, newY, size * 0.7, angle + 25);
+
+  if (size < 20) {
+    fill(255, 0, 0);
+    noStroke();
+    ellipse(newX, newY, 10, 10);
+  }
 }
