@@ -131,11 +131,11 @@ class Branch {
 
   addApples(numApples) {
     let distance = dist(this.x1, this.y1, this.x2, this.y2);
-    let spacing = distance / (numApples + 1);
+    let spacing = distance / (numApples + 2);
     let currentPos = spacing;
 
     for (let i = 0; i < numApples; i++) {
-      let appleDiameter = random(20, 55); // Random diameter for visual variety
+      let appleDiameter = random(20, 65); // Random diameter for visual variety
       let x = lerp(this.x1, this.x2, currentPos / distance);
       let y = lerp(this.y1, this.y2, currentPos / distance);
       let apple = new Apple(appleDiameter);
@@ -152,8 +152,8 @@ class Apple {
     this.x = 0;
     this.y = 0;
     this.diameter = diameter;
-    this.color1 = color(250, 55, 30);
-    this.color2 = color(30, 255, 60);
+    this.color1 = color(191,16,41);
+    this.color2 = color(5,101,23);
   }
 
   setPosition(x, y) {
