@@ -58,14 +58,14 @@ function setup() {
   new Branch(232, 255, 232, 485)
   ];
 
-  // Define a simple pattern for apples
-  let pattern = [{ size: 30, position: 0.5, color: 'red' }];
-
   // Apply patterns to branches
   branches.forEach(branch => {
-    branch.addApples(pattern);
+    branch.addApples(2);  // Smaller number for clearer visualization
     branch.draw();
   });
+
+  // Draw the bottom rectangle and add apples inside it
+  drawBottomRectangle();
 }
 
 
@@ -129,48 +129,62 @@ class Branch {
     line(this.x1, this.y1, this.x2, this.y2);
   }
 
-  addApples() {
+  addApples(numApples) {
     let distance = dist(this.x1, this.y1, this.x2, this.y2);
-    let currentPos = 0;
-    let safetyMargin = 0.3; // Small space between apples for visual clarity
+    let spacing = distance / (numApples + 1);
+    let currentPos = spacing;
 
-    while (currentPos < distance) {
-      let appleDiameter = random(15, 80); // Random diameter between 20 and 40 pixels
-      if (currentPos + appleDiameter <= distance) {
-        let t = currentPos / distance;
-        let x = lerp(this.x1, this.x2, t);
-        let y = lerp(this.y1, this.y2, t);
-        let apple = new this.Apple(appleDiameter);
-        apple.setPosition(x, y);
-        apple.draw();
-        this.apples.push(apple);
-        currentPos += appleDiameter + safetyMargin; // Move position forward by the diameter plus a small margin
-      } else {
-        break; // Stop if there's no room for another apple
-      }
+    for (let i = 0; i < numApples; i++) {
+      let appleDiameter = random(20, 55); // Random diameter for visual variety
+      let x = lerp(this.x1, this.x2, currentPos / distance);
+      let y = lerp(this.y1, this.y2, currentPos / distance);
+      let apple = new Apple(appleDiameter);
+      apple.setPosition(x, y);
+      apple.draw();
+      this.apples.push(apple);
+      currentPos += spacing;
     }
   }
+}
 
-  Apple = class {
-    constructor(diameter) {
-      this.x = 0; // x position
-      this.y = 0; // y position
-      this.diameter = diameter; // diameter of the apple
-      this.color1 = color(250, 55, 30); // Red
-      this.color2 = color(30, 255, 60); // Green
-    }
+class Apple {
+  constructor(diameter) {
+    this.x = 0;
+    this.y = 0;
+    this.diameter = diameter;
+    this.color1 = color(250, 55, 30);
+    this.color2 = color(30, 255, 60);
+  }
 
-    setPosition(x, y) {
-      this.x = x;
-      this.y = y;
-    }
+  setPosition(x, y) {
+    this.x = x;
+    this.y = y;
+  }
 
-    draw() {
-      let gradient = drawingContext.createLinearGradient(this.x, this.y, this.x, this.y + this.diameter);
-      gradient.addColorStop(0.1, this.color1.toString());
-      gradient.addColorStop(0.2, this.color2.toString());
-      drawingContext.fillStyle = gradient;
-      ellipse(this.x, this.y, this.diameter, this.diameter);
-    }
+  draw() {
+    let gradient = drawingContext.createLinearGradient(this.x, this.y, this.x, this.y + this.diameter);
+    gradient.addColorStop(0.1, this.color1.toString());
+    gradient.addColorStop(0.2, this.color2.toString());
+    drawingContext.fillStyle = gradient;
+    ellipse(this.x, this.y, this.diameter, this.diameter);
+  }
+}
+
+function drawBottomRectangle() {
+  fill(46, 58, 73);  // Dark slate color for the rectangle
+  stroke(0);
+  strokeWeight(2);
+  let rectX = 142, rectY = 485, rectW = 180, rectH = 70;
+  rect(rectX, rectY, rectW, rectH);  // Draw the rectangle
+
+  // Add apples inside the rectangle with random x positions
+  let numApples = 5;  // Define a fixed number of apples
+  for (let i = 0; i < numApples; i++) {
+    let appleDiameter = random(15, 40);  // Set a fixed diameter for visibility
+    let randomX = random(rectX + appleDiameter / 2, rectX + rectW - appleDiameter / 5);
+    let appleY = rectY + rectH / 2; // Center the apple vertically in the rectangle
+    let apple = new Apple(appleDiameter);
+    apple.setPosition(randomX, appleY);
+    apple.draw();
   }
 }
