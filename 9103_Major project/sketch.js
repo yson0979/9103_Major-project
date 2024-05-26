@@ -1,6 +1,7 @@
 /*
 function setup() {
   //lets create a canvas of 400x400 pixels
+  createCanvas(450, 650);
   createCanvas(464, 650);
 }
  
@@ -8,16 +9,16 @@ function draw() {
   //lets set the background to black
   background(0);
   //lets set the fill to white
+  fill(0, 76, 153);
   fill(0, 76, 158);
   //lets set the stroke to red
   stroke(0, 153, 153);
   //lets set the stroke weight to 5
   strokeWeight(50);
   //lets draw a rectangle at 200,200 with a width and height of 100
+  rect(0, 0, 450, 650); //rect(x,y,width,height)
   rect(0, 0, 463, 650); //rect(x,y,width,height)
-
   //Code of background is below
-
   //Code of apple tree is below
   
 }
@@ -26,35 +27,62 @@ function draw() {
 
 function setup() {
   createCanvas(464, 650);
-  noLoop(); // Stops the draw function from continuously looping
-}
 
-  function draw() {  
   // Outer layer - light old green rectangle
   background(146, 157, 155); 
   noStroke();
-  
-  // Inner layer - dark blue with yellow grains and filamentous flocculent
-  drawOilPainting(width, height); 
 
-  // Draw the tree at the center bottom of the inner rectangle
-  drawTree(230, 514, 100, 90);  // Adjust x, y to ensure the tree is entirely visible
+  // Inner layer - dark blue with yellow grains and filamentous flocculent
+  drawOilPainting(width, height);
+
+  // Create branches and apples
+  let branches = [
+  new Branch(85, 40, 90, 135),
+  new Branch(90, 135, 125, 132),
+  new Branch(125, 132, 123, 265),
+  new Branch(123, 265, 330, 265),
+  new Branch(330, 265, 328, 110),
+  new Branch(328, 110, 400, 125),
+  new Branch(400, 125, 400, 100),
+  new Branch(232, 255, 232, 195),
+  new Branch(160, 195, 275, 195),
+  new Branch(180, 195, 180, 170),
+  new Branch(275, 195, 275, 170),
+  new Branch(232, 255, 232, 485)
+  ];
+
+  branches.forEach(branch => {
+  branch.draw();
+  branch.addApples();
+  });
+
+  // Draw the base rectangles
+  stroke(0);
+  strokeWeight(2);
+  fill(46, 58, 73); // Dark slate color for base
+  rect(20, 495, 424, 50);  // Large base rectangle
+  rect(142, 485, 180, 10); // Small top rectangle, properly placed
 }
+
+
 
 
 function drawOilPainting(w, h) {
   //TODO: Dark blue background
-  fill(83, 96, 110);
+
+   fill(83, 96, 110);
   rect(18, 18, w - 36, h - 36); // Adjusted to leave a border
-   
+
+
+
   // Draw the stripe texture
    noFill(); 
    // 
   for (let i = 0; i < 2600; i++) { 
     let storkeWeight = random(0.36, 0.08)
-    i % 3 ===0 ? stroke(255, 255, 255): stroke(220, 230, 219);   
+    i % 3 ===0 ? stroke(255, 255, 255): stroke(220, 230,219 );   
 
-    
+
     strokeWeight(storkeWeight); 
 
     let x1 = random(36, w - 18); 
@@ -70,6 +98,7 @@ function drawOilPainting(w, h) {
 }
 
  // Draw the dot texture 
+
  let xDot = 20; 
  let yDot = 20; 
  fill(46, 58, 73);
@@ -81,40 +110,46 @@ function drawOilPainting(w, h) {
    }
  }
 }
- /*
- for (let i = 0; i < 1000; i++){
-  fill(255, 255, 102); // Yellow grains color
- 
-    let x = random(10, w - 10); // Random x position within inner layer
-    let y = random(10, h - 10); // Random y position within inner layer
-    ellipse(x, y, 2, 2); // Draw a small ellipse to simulate grains
-}
-*/ 
 
 
-function drawTree(x, y, size, angle) {
-  if (size < 10) return; // Stop if the branch size is too small
+class Branch {
+  constructor(x1, y1, x2, y2) {
+    this.x1 = x1; // Starting x-coordinate of the branch
+    this.y1 = y1; // Starting y-coordinate of the branch
+    this.x2 = x2; // Ending x-coordinate of the branch
+    this.y2 = y2; // Ending y-coordinate of the branch
+    this.apples = []; // Array to hold apples that grow on this branch
+  }
+  
+  draw() {
+    stroke(0); // Set the color of the branch line
+    strokeWeight(2); // Set the thickness of the branch line
+    line(this.x1, this.y1, this.x2, this.y2); // Draw the line representing the branch
+  }
+  
+  addApples() {
+    let appleCount = floor(random(3, 7)); // Random number of apples to grow on the branch
+    for (let i = 0; i < appleCount; i++) {
+      let x = lerp(this.x1, this.x2, random()); // Calculate random x-position for apple along the branch
+      let y = lerp(this.y1, this.y2, random()); // Calculate random y-position for apple along the branch
+      let apple = new this.Apple(x, y);
+      apple.draw();
+      this.apples.push(apple);
+    }
+  }
 
-  // Add a random factor to branch angles for a more abstract look
-  let branchAngle = 0;
-
-  let newX = x - size * cos(radians(angle + branchAngle));
-  let newY = y - size * sin(radians(angle + branchAngle));
-
-  // Use varying stroke weights and colors for a more abstract effect
-  strokeWeight(random(1, 20));
-  stroke(random(100, 255), 83, random(10, 100)); // Varied color for more artistic effect
-
-  line(x, y, newX, newY);
-
-  // Recursive calls for branches with more variation
-  drawTree(newX, newY, size * random(0.5, 0.9), angle + random(25, 80));
-  drawTree(newX, newY, size * random(0.5, 0.9), angle - random(25, 80));
-
-  // Add random colored "apples" or abstract blobs
-  if (size < 20 && random() > 0.6) { // Only add half the time for less predictability
-    fill(random(100, 255), 0, 0);
-    noStroke();
-    ellipse(newX + random(-10, 20), newY + random(-10, 20), random(5, 25), random(5, 25));
+  // Nested Apple class within Branch
+  Apple = class {
+    constructor(x, y) {
+      this.x = x; // x-coordinate of the apple
+      this.y = y; // y-coordinate of the apple
+      this.diameter = 5; // Diameter of the apple
+    }
+    
+    draw() {
+      fill(255, 0, 0); // Red color for apples
+      noStroke(); // Apples do not have a stroke
+      ellipse(this.x, this.y, this.diameter, this.diameter); // Draw the apple as an ellipse
+    }
   }
 }
