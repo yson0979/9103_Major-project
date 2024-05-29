@@ -140,8 +140,6 @@ function drawBranchesAndApples(canvasWidth, canvasHeight) {
   });
 }
 
-
-
 // Branch class for managing the drawing of branches and apples
 class Branch {
   // Constructor initializes a branch with its start and end coordinates
