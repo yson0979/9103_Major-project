@@ -1,102 +1,148 @@
 function setup() {
+  // Set the canvas size
   createCanvas(464, 649);
-  background(146, 157, 155); // Outer layer color
-  noStroke();
-
-  drawOilPainting(width, height); // Inner layer
-
-  // Base rectangle
-  stroke(0);
-  strokeWeight(1);
-  fill(95, 142, 105);
-  rect(20, 495, 424, 50);
-  
-  // Create and draw branches with apples
-  let branches = [
-    new Branch(85, 40, 90, 135),
-    new Branch(90, 135, 125, 132),
-    new Branch(125, 132, 123, 265),
-    new Branch(123, 265, 330, 265),
-    new Branch(330, 265, 328, 110),
-    new Branch(328, 110, 400, 125),
-    new Branch(400, 125, 400, 100),
-    new Branch(232, 255, 232, 195),
-    new Branch(160, 195, 275, 195),
-    new Branch(180, 195, 180, 170),
-    new Branch(275, 195, 275, 170),
-    new Branch(232, 255, 232, 485)
-  ];
-  branches.forEach(branch => {
-    branch.addApples(12);
-    branch.draw();
-  });
-
-  drawBottomRectangle();
-  drawApplesBelowY(600); // Draw apples below y = 400
+  drawCanvas();
 }
 
-// Function to randomly place apples below a certain y-axis value
-function drawApplesBelowY(minY) {
-  const numApples = floor(random(3, 5)); // Random number of apples, 3 to 5
-  let apples = [];
+function windowResized() {
+  // Resize the canvas to the window's width and height
+  resizeCanvas(windowWidth, windowHeight);
+  drawCanvas();
+}
 
-  for (let i = 0; i < numApples; i++) {
-    let appleDiameter = random(20, 85);
-    let apple = new Apple(appleDiameter);
-    let attempts = 0, maxAttempts = 100;
+function drawCanvas() {
+  let canvasWidth = width;
+  let canvasHeight = height;
 
-    do {
-      let x = random(appleDiameter / 2, width - appleDiameter / 2);
-      let y = random(minY, height - appleDiameter / 2);
-      apple.setPosition(x, y);
+  // Set the background color
+  background(146, 157, 155); 
+  noStroke();
+  //Draw inner layer
+  drawOilPainting(canvasWidth, canvasHeight);  
 
-      let overlapping = apples.some(a => dist(a.x, a.y, apple.x, apple.y) < (a.diameter / 2 + apple.diameter / 2));
-      if (!overlapping) {
-        apple.draw();
-        apples.push(apple);
-        break;
-      }
-      attempts++;
-    } while (attempts < maxAttempts);
-
-    if (attempts >= maxAttempts) {
-      console.log("Failed to place all apples without overlap");
-    }
+  // Draw roots
+  drawRoots(canvasWidth, canvasHeight); 
+  // Draw bottom rectangle
+  drawBottomRectangle(canvasWidth, canvasHeight); 
+  // Draw branches and apples
+  drawBranchesAndApples(canvasWidth, canvasHeight); 
   }
+
+  function drawRoots(canvasWidth, canvasHeight) {
+  // Calculate and draw the roots rectangle
+  let rootX = 16 / 464 * canvasWidth;
+  let rootY = 490 / 649 * canvasHeight;
+  let rootWidth = 430 / 464 * canvasWidth;
+  let rootHeight = 40 / 649 * canvasHeight;
+  fill(95, 142, 105);
+  rect(rootX, rootY, rootWidth, rootHeight);
 }
 
 function drawOilPainting(w, h) {
+    // Draw the rectangle for the oil painting
   fill(83, 96, 110);
   rect(18, 18, w - 36, h - 36);
 
+  // Draw multiple bezier curves to create the oil painting effect
   noFill();
   for (let i = 0; i < 2600; i++) {
     let strokeWeightValue = random(0.36, 0.08);
     stroke(i % 3 === 0 ? 255 : 220, 230, 219);
     strokeWeight(strokeWeightValue);
 
-    let x1 = random(36, w - 18); 
-    let y1 = random(36, h - 18); 
-    let x2 = x1 + random(-50, 50); 
-    let y2 = y1 + random(-50, 50); 
-    let cp1x = random(x1 + 10, x1 - 10); 
-    let cp1y = random(y1 + 10, y1 - 10); 
-    let cp2x = random(x2 - 10, x2 + 10); 
-    let cp2y = random(y2 - 10, y2 + 5); 
+    let x1 = random(36, w - 18);
+    let y1 = random(36, h - 18);
+    let x2 = x1 + random(-50, 50);
+    let y2 = y1 + random(-50, 50);
+    let cp1x = random(x1 + 10, x1 - 10);
+    let cp1y = random(y1 + 10, y1 - 10);
+    let cp2x = random(x2 - 10, x2 + 10);
+    let cp2y = random(y2 - 10, y2 + 5);
 
-    bezier(x1, y1, cp1x, cp1y, cp2x, cp2y, x2, y2); 
+    bezier(x1, y1, cp1x, cp1y, cp2x, cp2y, x2, y2);
   }
 
+  // Draw multiple small ellipses to create the texture
   fill(46, 58, 73);
   noStroke();
-  for (let i = 0; i < 78; i++) {
-    for (let j = 0; j < 112; j++) {
+  let xDots = (w-40)/5.5
+  let yDots =  (h-40)/5.5
+ for (let i = 0; i < xDots; i++) {
+   for (let j = 0; j < yDots; j++) {
       ellipse(20 + i * 5.5, 20 + j * 5.5, 2, 2);
     }
   }
 }
 
-// Defines the Branch class which manages the drawing of branches and apples on them
+  // Draw the bottom rectangle
+function drawBottomRectangle(canvasWidth, canvasHeight) {
+  let rectX = canvasWidth * 120 / 464;
+  let rectY = canvasHeight * 485 / 649;
+  let rectW = canvasWidth * 220 / 464;
+  let rectH = canvasHeight * 50 / 649;
+  
+  // Draw the bottom rectangle
+  fill(46, 58, 73);
+  stroke(0);
+  strokeWeight(1);
+  fill(230, 197, 116);
+  rect(rectX, rectY, rectW, rectH);
+  fill(251, 88, 87);
+  rect(rectX, rectY, canvasWidth * 44 / 464, rectH);
+  rect(rectX + canvasWidth * 160 / 464, rectY, canvasWidth * 44 / 464, rectH);
+  fill(135, 173, 128);
+  rect(rectX + canvasWidth * 70 / 464, rectY, canvasWidth * 44 / 464, rectH);
+  // Draw apples on the bottom rectangle
+  drawApplesOnRectangle(rectX, rectY, rectW, rectH);
+}
+
+function drawApplesOnRectangle(rectX, rectY, rectW, rectH) {
+  // Add apples to the rectangle
+  let apples = [];
+  for (let i = 0; i < 6; i++) {
+    let appleDiameter = 50;
+    let apple = new Apple(appleDiameter);
+    let attempts = 0, maxAttempts = 100;
+    do {
+      let randomX = random(rectX + appleDiameter / 2, rectX + rectW - appleDiameter / 2);
+      apple.setPosition(randomX, rectY + rectH / 2);
+      if (attempts++ > maxAttempts) {
+        break;
+     }
+      } while (apples.some(a => applesOverlap(a, apple)));
+      if (attempts <= maxAttempts) {
+        apple.draw();
+        apples.push(apple);
+      }
+    }
+}
+
+function drawBranchesAndApples(canvasWidth, canvasHeight) {
+  // Draw branches and apples
+  let branches = [
+    new Branch(85 / 464 * canvasWidth, 40 / 649 * canvasHeight, 90 / 464 * canvasWidth, 135 / 649 * canvasHeight),
+    new Branch(90 / 464 * canvasWidth, 135 / 649 * canvasHeight, 125 / 464 * canvasWidth, 132 / 649 * canvasHeight),
+    new Branch(125 / 464 * canvasWidth, 132 / 649 * canvasHeight, 123 / 464 * canvasWidth, 265 / 649 * canvasHeight),
+    new Branch(123 / 464 * canvasWidth, 265 / 649 * canvasHeight, 330 / 464 * canvasWidth, 265 / 649 * canvasHeight),
+    new Branch(330 / 464 * canvasWidth, 265 / 649 * canvasHeight, 328 / 464 * canvasWidth, 110 / 649 * canvasHeight),
+    new Branch(328 / 464 * canvasWidth, 110 / 649 * canvasHeight, 400 / 464 * canvasWidth, 125 / 649 * canvasHeight),
+    new Branch(400 / 464 * canvasWidth, 125 / 649 * canvasHeight, 400 / 464 * canvasWidth, 100 / 649 * canvasHeight),
+    new Branch(232 / 464 * canvasWidth, 255 / 649 * canvasHeight, 232 / 464 * canvasWidth, 195 / 649 * canvasHeight),
+    new Branch(160 / 464 * canvasWidth, 195 / 649 * canvasHeight, 275 / 464 * canvasWidth, 195 / 649 * canvasHeight),
+    new Branch(180 / 464 * canvasWidth, 195 / 649 * canvasHeight, 180 / 464 * canvasWidth, 170 / 649 * canvasHeight),
+    new Branch(275 / 464 * canvasWidth, 195 / 649 * canvasHeight, 275 / 464 * canvasWidth, 170 / 649 * canvasHeight),
+    new Branch(232 / 464 * canvasWidth, 255 / 649 * canvasHeight, 232 / 464 * canvasWidth, 485 / 649 * canvasHeight)
+  ];
+  branches.forEach(branch => {
+    branch.addApples(12); // Add apples to each branch
+    branch.drawApples(); // Draw the apples
+    branch.drawBranch(); // Draw the branch
+  });
+}
+
+
+
+// Branch class for managing the drawing of branches and apples
 class Branch {
   // Constructor initializes a branch with its start and end coordinates
   constructor(x1, y1, x2, y2) {
@@ -108,12 +154,17 @@ class Branch {
   }
 
   // Draws the branch as a line from its start to end points
-  draw() {
-    stroke(0); // Set the line color to black
-    strokeWeight(2); // Set the line thickness to 2 pixels
-    line(this.x1, this.y1, this.x2, this.y2); // Draw the line representing the branch
+  drawBranch() {
+    stroke(0, 0, 0);  
+    strokeWeight(1.2); 
+    // Draw the line representing the branch
+    line(this.x1, this.y1, this.x2, this.y2); 
   }
 
+  // Draws the apples on the branch
+  drawApples() {
+    this.apples.forEach(apple => apple.draw());
+  }
 
   // Adds a specified number of apples along the branch
   addApples(numApples) {
@@ -130,9 +181,8 @@ class Branch {
 
       // Position apples ensuring they do not overlap
       do {
-        // Calculate parameter t for linear interpolation along the branch
+        // Calculates the linear interpolation parameter t along the branch and sets the apple position        
         let t = (spacing * (i + 3)) / dist(this.x1, this.y1, this.x2, this.y2);
-        // Set apple position using linear interpolation of branch coordinates
         apple.setPosition(lerp(this.x1, this.x2, t), lerp(this.y1, this.y2, t));
 
         // Limit the number of attempts to position each apple to prevent infinite loops
@@ -141,9 +191,8 @@ class Branch {
         }
       } while (this.apples.some(a => applesOverlap(a, apple))); // Check for overlapping apples
 
-      // If positioned successfully, draw and store the apple
-      if (attempts <= maxAttempts) {
-        apple.draw();
+        // If the maximum limit is not exceeded, draw and store apples      
+        if (attempts <= maxAttempts) {
         this.apples.push(apple);
       }
     }
@@ -164,23 +213,22 @@ class Branch {
   }
 }
 
-
 // Defines a function to check if two apples overlap
 function applesOverlap(apple1, apple2) {
   // Calculate the distance between the centers of two apples
   let distance = dist(apple1.x, apple1.y, apple2.x, apple2.y);
-  // Return true if the distance is less than the sum of their radii (i.e., they overlap)
+  // Return true if the distance is less than the sum of their radii
   return distance < (apple1.diameter / 2 + apple2.diameter / 2);
 }
 
-// Apple class defines the properties and methods for creating and drawing apples
+// Apple class for creating and drawing apples
 class Apple {
   constructor(diameter) {
     this.x = 0;  // x-coordinate of the apple's center
     this.y = 0;  // y-coordinate of the apple's center
     this.diameter = diameter;  // Diameter of the apple
-    this.color1 = color(251, 88, 87);  // Color gradient start - dark red
-    this.color2 = color(135, 173, 128);  // Color gradient end - dark green
+    this.color1 = color(251, 88, 87);  // One side color - red
+    this.color2 = color(135, 173, 128);  // Another side color - green
   }
 
   // Set the position of the apple
@@ -191,7 +239,8 @@ class Apple {
 
   // Draw the apple with split colors
   draw() {
-    // Decide the split direction
+    // Set color arrangement by different split, color1 is red, color2 is green
+    // Decide the split direction by different random number interval
     if (random() < 0.5) {
       // Split horizontally
       fill(this.color1);
@@ -204,43 +253,6 @@ class Apple {
       arc(this.x, this.y, this.diameter, this.diameter, -HALF_PI, HALF_PI);
       fill(this.color2);
       arc(this.x, this.y, this.diameter, this.diameter, HALF_PI, -HALF_PI);
-    }
-  }
-
-}
-
-// Function to draw and manage apples within the rectangle at the bottom of the canvas
-function drawBottomRectangle() {
-  fill(46, 58, 73);  // Set the fill color to dark slate for the rectangle
-  stroke(0);  // Set the stroke color to black
-  strokeWeight(1);  // Set the stroke thickness to 2
-  let rectX = 120, rectY = 485, rectW = 220, rectH = 50;  // Dimensions and position of the rectangle
-  fill(230, 197, 116)
-  rect(rectX, rectY, rectW, rectH);  // Draw the rectangle
-
-  // Array to store apples to ensure they do not overlap
-  let apples = [];
-  // Attempt to place 5 apples within the rectangle
-  for (let i = 0; i < 10; i++) {
-    let appleDiameter = random(15, 70);  // Randomly determine the diameter of the apple
-    let apple = new Apple(appleDiameter);  // Create a new Apple instance
-    let attempts = 0, maxAttempts = 100;  // Limit the number of placement attempts to avoid infinite loops
-
-    // Try to place the apple within the rectangle without overlapping with others
-    do {
-      let randomX = random(rectX + appleDiameter / 2, rectX + rectW - appleDiameter / 2);  // Random x position within the rectangle
-      apple.setPosition(randomX, rectY + rectH / 2);  // Set the apple's position
-
-      // Increment attempts and break if maximum attempts are reached
-      if (attempts++ > maxAttempts) {
-        break;
-      }
-    } while (apples.some(a => applesOverlap(a, apple)));  // Check if the newly placed apple overlaps with any existing ones
-
-    // If the apple is successfully placed without overlapping, draw it and add it to the list
-    if (attempts <= maxAttempts) {
-      apple.draw();
-      apples.push(apple);
     }
   }
 }
