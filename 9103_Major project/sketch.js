@@ -10,9 +10,9 @@ function setup() {
   strokeWeight(1);
   fill(95, 142, 105);
   rect(20, 495, 424, 50);
-  
 
-  
+
+
   // Create and draw branches with apples
   let branches = [
     new Branch(85, 40, 90, 135),
@@ -28,44 +28,27 @@ function setup() {
     new Branch(275, 195, 275, 170),
     new Branch(232, 255, 232, 485)
   ];
+
   branches.forEach(branch => {
+
     branch.addApples(12);
-    branch.draw();
+  });
+
+
+  // Draw all apples
+  branches.forEach(branch => {
+    branch.drawApples();
+  });
+
+
+  // Draw all branches on top of apples
+  branches.forEach(branch => {
+    branch.drawBranch();
   });
 
   drawBottomRectangle();
-  drawApplesBelowY(600); // Draw apples below y = 400
 }
 
-// Function to randomly place apples below a certain y-axis value
-function drawApplesBelowY(minY) {
-  const numApples = floor(random(3, 5)); // Random number of apples, 3 to 5
-  let apples = [];
-
-  for (let i = 0; i < numApples; i++) {
-    let appleDiameter = random(20, 85);
-    let apple = new Apple(appleDiameter);
-    let attempts = 0, maxAttempts = 100;
-
-    do {
-      let x = random(appleDiameter / 2, width - appleDiameter / 2);
-      let y = random(minY, height - appleDiameter / 2);
-      apple.setPosition(x, y);
-
-      let overlapping = apples.some(a => dist(a.x, a.y, apple.x, apple.y) < (a.diameter / 2 + apple.diameter / 2));
-      if (!overlapping) {
-        apple.draw();
-        apples.push(apple);
-        break;
-      }
-      attempts++;
-    } while (attempts < maxAttempts);
-
-    if (attempts >= maxAttempts) {
-      console.log("Failed to place all apples without overlap");
-    }
-  }
-}
 
 function drawOilPainting(w, h) {
   fill(83, 96, 110);
@@ -77,16 +60,16 @@ function drawOilPainting(w, h) {
     stroke(i % 3 === 0 ? 255 : 220, 230, 219);
     strokeWeight(strokeWeightValue);
 
-    let x1 = random(36, w - 18); 
-    let y1 = random(36, h - 18); 
-    let x2 = x1 + random(-50, 50); 
-    let y2 = y1 + random(-50, 50); 
-    let cp1x = random(x1 + 10, x1 - 10); 
-    let cp1y = random(y1 + 10, y1 - 10); 
-    let cp2x = random(x2 - 10, x2 + 10); 
-    let cp2y = random(y2 - 10, y2 + 5); 
+    let x1 = random(36, w - 18);
+    let y1 = random(36, h - 18);
+    let x2 = x1 + random(-50, 50);
+    let y2 = y1 + random(-50, 50);
+    let cp1x = random(x1 + 10, x1 - 10);
+    let cp1y = random(y1 + 10, y1 - 10);
+    let cp2x = random(x2 - 10, x2 + 10);
+    let cp2y = random(y2 - 10, y2 + 5);
 
-    bezier(x1, y1, cp1x, cp1y, cp2x, cp2y, x2, y2); 
+    bezier(x1, y1, cp1x, cp1y, cp2x, cp2y, x2, y2);
   }
 
   fill(46, 58, 73);
@@ -110,10 +93,15 @@ class Branch {
   }
 
   // Draws the branch as a line from its start to end points
-  draw() {
-    stroke(0); // Set the line color to black
-    strokeWeight(2); // Set the line thickness to 2 pixels
+  drawBranch() {
+    stroke(0, 0, 0); // Set the line color to black
+    strokeWeight(1.2); // Set the line thickness to 2 pixels
     line(this.x1, this.y1, this.x2, this.y2); // Draw the line representing the branch
+  }
+
+  // Draws the apples on the branch
+  drawApples() {
+    this.apples.forEach(apple => apple.draw());
   }
 
 
@@ -145,7 +133,7 @@ class Branch {
 
       // If positioned successfully, draw and store the apple
       if (attempts <= maxAttempts) {
-        apple.draw();
+
         this.apples.push(apple);
       }
     }
@@ -158,6 +146,8 @@ class Branch {
 
   // Added method to get the average position and a representative diameter for shadow casting
   getShadowCastingProperties() {
+
+    //Object 
     return {
       x: (this.x1 + this.x2) / 2,
       y: (this.y1 + this.y2) / 2,
@@ -181,8 +171,8 @@ class Apple {
     this.x = 0;  // x-coordinate of the apple's center
     this.y = 0;  // y-coordinate of the apple's center
     this.diameter = diameter;  // Diameter of the apple
-    this.color1 = color(251, 88, 87);  // Color gradient start - dark red
-    this.color2 = color(135, 173, 128);  // Color gradient end - dark green
+    this.color1 = color(251, 88, 87);  // One side color - red
+    this.color2 = color(135, 173, 128);  // Another side color - green
   }
 
   // Set the position of the apple
@@ -193,7 +183,8 @@ class Apple {
 
   // Draw the apple with split colors
   draw() {
-    // Decide the split direction
+    // Set color arrangement by different split, color1 is red, color2 is green
+    // Decide the split direction by different random number interval
     if (random() < 0.5) {
       // Split horizontally
       fill(this.color1);
@@ -215,32 +206,32 @@ class Apple {
 function drawBottomRectangle() {
   fill(46, 58, 73);  // Set the fill color to dark slate for the rectangle
   stroke(0);  // Set the stroke color to black
-  strokeWeight(1);  // Set the stroke thickness to 2
-  let rectX = 120, rectY = 485, rectW = 220, rectH = 50;  // Dimensions and position of the rectangle
-  fill(230, 197, 116)
-  rect(rectX, rectY, rectW, rectH);  // Draw the rectangle
+  strokeWeight(1);  // Set the stroke thickness to 1
+  let rectX = 120, rectY = 485, rectW = 220, rectH = 50;  // Dimensions and position of the bottom rectangle
+  fill(230, 197, 116); // Fill bottom rectangle with yellow
+  rect(rectX, rectY, rectW, rectH);  // Draw the bottom rectangle
 
-  //Draw the small rectangle inside the rectangle
-  fill(251, 88, 87);
+  //Draw the small rectangle above the bottom rectangle
+  fill(251, 88, 87); // red rectangle
   rect(120, 485, 44, 50);
   rect(280, 485, 44, 50);
-  fill(135, 173, 128);
+  fill(135, 173, 128); // green rectangle
   rect(190, 485, 44, 50);
 
   // Array to store apples to ensure they do not overlap
   let apples = [];
-  // Attempt to place 5 apples within the rectangle
-  for (let i = 0; i < 10; i++) {
-    let appleDiameter = random(15, 70);  // Randomly determine the diameter of the apple
+  // Attempt to place max of 5 apples within the rectangle
+  for (let i = 0; i < 6; i++) {
+    let appleDiameter = random(30, 60);  // Randomly determine the diameter of the apple
     let apple = new Apple(appleDiameter);  // Create a new Apple instance
     let attempts = 0, maxAttempts = 100;  // Limit the number of placement attempts to avoid infinite loops
 
-    // Try to place the apple within the rectangle without overlapping with others
+    // Place the apple within the rectangle without overlapping with others
     do {
       let randomX = random(rectX + appleDiameter / 2, rectX + rectW - appleDiameter / 2);  // Random x position within the rectangle
       apple.setPosition(randomX, rectY + rectH / 2);  // Set the apple's position
 
-      // Increment attempts and break if maximum attempts are reached
+      // Increment attempts and break if reached 100
       if (attempts++ > maxAttempts) {
         break;
       }
