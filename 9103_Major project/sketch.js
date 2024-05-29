@@ -86,7 +86,7 @@ class Branch {
   // Draws the branch as a line from its start to end points
   draw() {
     stroke(0); // Set the line color to black
-    strokeWeight(2); // Set the line thickness to 2 pixels
+    strokeWeight(1); // Set the line thickness to 2 pixels
     line(this.x1, this.y1, this.x2, this.y2); // Draw the line representing the branch
   }
 
