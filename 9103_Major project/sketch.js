@@ -7,9 +7,11 @@ function setup() {
 
   // Base rectangle
   stroke(0);
-  strokeWeight(1);
+  strokeWeight(1.5);
   fill(95, 142, 105);
   rect(20, 495, 424, 50);
+  
+
   
   // Create and draw branches with apples
   let branches = [
@@ -109,8 +111,8 @@ class Branch {
 
   // Draws the branch as a line from its start to end points
   draw() {
-    stroke(0); // Set the line color to black
-    strokeWeight(2); // Set the line thickness to 2 pixels
+    stroke(238,220,130); // Set the line color to black
+    strokeWeight(4); // Set the line thickness to 2 pixels
     line(this.x1, this.y1, this.x2, this.y2); // Draw the line representing the branch
   }
 
@@ -213,10 +215,12 @@ class Apple {
 function drawBottomRectangle() {
   fill(46, 58, 73);  // Set the fill color to dark slate for the rectangle
   stroke(0);  // Set the stroke color to black
-  strokeWeight(1);  // Set the stroke thickness to 2
+  strokeWeight(1.5);  // Set the stroke thickness to 2
   let rectX = 120, rectY = 485, rectW = 220, rectH = 50;  // Dimensions and position of the rectangle
   fill(230, 197, 116)
   rect(rectX, rectY, rectW, rectH);  // Draw the rectangle
+
+  
 
   // Array to store apples to ensure they do not overlap
   let apples = [];
