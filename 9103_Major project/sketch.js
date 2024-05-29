@@ -1,21 +1,17 @@
 function setup() {
-  createCanvas(464, 650);
-
-  // Outer layer - light old green rectangle
-  background(146, 157, 155); 
+  createCanvas(464, 649);
+  background(146, 157, 155); // Outer layer color
   noStroke();
 
-  // Inner layer - dark blue with yellow grains and filamentous flocculent
-  drawOilPainting(width, height);
+  drawOilPainting(width, height); // Inner layer
 
-  // Draw the base rectangles
+  // Base rectangle
   stroke(0);
-  strokeWeight(2);
-  fill(46, 58, 73); // Dark slate color for base
-  rect(20, 495, 424, 50);  // Large base rectangle
-  rect(142, 485, 180, 10); // Small top rectangle, properly placed
-
-  // Create branches and apples
+  strokeWeight(1);
+  fill(95, 142, 105);
+  rect(20, 495, 424, 50);
+  
+  // Create and draw branches with apples
   let branches = [
     new Branch(85, 40, 90, 135),
     new Branch(90, 135, 125, 132),
@@ -30,20 +26,48 @@ function setup() {
     new Branch(275, 195, 275, 170),
     new Branch(232, 255, 232, 485)
   ];
-
-  // Apply patterns to branches
   branches.forEach(branch => {
-    branch.addApples(12);  // Smaller number for clearer visualization
+    branch.addApples(12);
     branch.draw();
   });
 
-  // Draw the bottom rectangle and add apples inside it
   drawBottomRectangle();
+  drawApplesBelowY(600); // Draw apples below y = 400
+}
+
+// Function to randomly place apples below a certain y-axis value
+function drawApplesBelowY(minY) {
+  const numApples = floor(random(3, 5)); // Random number of apples, 3 to 5
+  let apples = [];
+
+  for (let i = 0; i < numApples; i++) {
+    let appleDiameter = random(20, 85);
+    let apple = new Apple(appleDiameter);
+    let attempts = 0, maxAttempts = 100;
+
+    do {
+      let x = random(appleDiameter / 2, width - appleDiameter / 2);
+      let y = random(minY, height - appleDiameter / 2);
+      apple.setPosition(x, y);
+
+      let overlapping = apples.some(a => dist(a.x, a.y, apple.x, apple.y) < (a.diameter / 2 + apple.diameter / 2));
+      if (!overlapping) {
+        apple.draw();
+        apples.push(apple);
+        break;
+      }
+      attempts++;
+    } while (attempts < maxAttempts);
+
+    if (attempts >= maxAttempts) {
+      console.log("Failed to place all apples without overlap");
+    }
+  }
 }
 
 function drawOilPainting(w, h) {
   fill(83, 96, 110);
-  rect(18, 18, w - 36, h - 36); // Adjusted to leave a border
+  rect(18, 18, w - 36, h - 36);
 
   noFill();
   for (let i = 0; i < 2600; i++) {
@@ -86,9 +110,10 @@ class Branch {
   // Draws the branch as a line from its start to end points
   draw() {
     stroke(0); // Set the line color to black
-    strokeWeight(1); // Set the line thickness to 2 pixels
+    strokeWeight(2); // Set the line thickness to 2 pixels
     line(this.x1, this.y1, this.x2, this.y2); // Draw the line representing the branch
   }
+
 
   // Adds a specified number of apples along the branch
   addApples(numApples) {
@@ -128,6 +153,15 @@ class Branch {
   calculateSpacing(numApples) {
     return dist(this.x1, this.y1, this.x2, this.y2) / (numApples + 1);
   }
+
+  // Added method to get the average position and a representative diameter for shadow casting
+  getShadowCastingProperties() {
+    return {
+      x: (this.x1 + this.x2) / 2,
+      y: (this.y1 + this.y2) / 2,
+      diameter: 10 // Assumed diameter value
+    };
+  }
 }
 
 
@@ -145,8 +179,8 @@ class Apple {
     this.x = 0;  // x-coordinate of the apple's center
     this.y = 0;  // y-coordinate of the apple's center
     this.diameter = diameter;  // Diameter of the apple
-    this.color1 = color(191, 16, 41);  // Color gradient start - dark red
-    this.color2 = color(5, 101, 23);  // Color gradient end - dark green
+    this.color1 = color(251, 88, 87);  // Color gradient start - dark red
+    this.color2 = color(135, 173, 128);  // Color gradient end - dark green
   }
 
   // Set the position of the apple
@@ -155,30 +189,39 @@ class Apple {
     this.y = y;
   }
 
-  // Draw the apple with a gradient
+  // Draw the apple with split colors
   draw() {
-    // Create a linear gradient for the apple's fill
-    let gradient = drawingContext.createLinearGradient(this.x, this.y, this.x, this.y + this.diameter / 10);
-    gradient.addColorStop(0.1, this.color1.toString());  // Start of gradient
-    gradient.addColorStop(0.2, this.color2.toString());  // End of gradient
-    drawingContext.fillStyle = gradient;
-    // Draw the apple as an ellipse with the defined gradient
-    ellipse(this.x, this.y, this.diameter, this.diameter);
+    // Decide the split direction
+    if (random() < 0.5) {
+      // Split horizontally
+      fill(this.color1);
+      arc(this.x, this.y, this.diameter, this.diameter, PI, TWO_PI);
+      fill(this.color2);
+      arc(this.x, this.y, this.diameter, this.diameter, 0, PI);
+    } else {
+      // Split vertically
+      fill(this.color1);
+      arc(this.x, this.y, this.diameter, this.diameter, -HALF_PI, HALF_PI);
+      fill(this.color2);
+      arc(this.x, this.y, this.diameter, this.diameter, HALF_PI, -HALF_PI);
+    }
   }
+
 }
 
 // Function to draw and manage apples within the rectangle at the bottom of the canvas
 function drawBottomRectangle() {
   fill(46, 58, 73);  // Set the fill color to dark slate for the rectangle
   stroke(0);  // Set the stroke color to black
-  strokeWeight(2);  // Set the stroke thickness to 2
-  let rectX = 142, rectY = 485, rectW = 180, rectH = 70;  // Dimensions and position of the rectangle
+  strokeWeight(1);  // Set the stroke thickness to 2
+  let rectX = 120, rectY = 485, rectW = 220, rectH = 50;  // Dimensions and position of the rectangle
+  fill(230, 197, 116)
   rect(rectX, rectY, rectW, rectH);  // Draw the rectangle
 
   // Array to store apples to ensure they do not overlap
   let apples = [];
   // Attempt to place 5 apples within the rectangle
-  for (let i = 0; i < 5; i++) {
+  for (let i = 0; i < 10; i++) {
     let appleDiameter = random(15, 70);  // Randomly determine the diameter of the apple
     let apple = new Apple(appleDiameter);  // Create a new Apple instance
     let attempts = 0, maxAttempts = 100;  // Limit the number of placement attempts to avoid infinite loops
